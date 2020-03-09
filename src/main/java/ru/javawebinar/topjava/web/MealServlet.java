@@ -27,13 +27,13 @@ public class MealServlet extends HttpServlet {
             List<MealTo> mealToList = MealsUtil.filteredByStreams(crud.readAll(), LocalTime.MIN, LocalTime.MAX, 2000);
             req.setAttribute("meals", mealToList);
             req.getRequestDispatcher("/meals.jsp").forward(req, resp);
-        } else if (action.endsWith("update")) {
-            req.setAttribute("id", req.getParameter("id"));
-            req.setAttribute("date", req.getParameter("date"));
-            req.setAttribute("description", req.getParameter("description"));
-            req.setAttribute("calories", req.getParameter("calories"));
+        } else if (action.equalsIgnoreCase("update")) {
+            Meal meal = crud.read(Integer.parseInt(req.getParameter("id")));
+            req.setAttribute("meal", meal);
             req.getRequestDispatcher("/mealEdit.jsp").forward(req, resp);
-        } else if (action.endsWith("delete")) {
+        } else if (action.equalsIgnoreCase("delete")) {
+
+        } else if (action.equalsIgnoreCase("create")) {
 
         }
     }
