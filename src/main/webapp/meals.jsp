@@ -13,28 +13,30 @@
                 <th>Description</th>
                 <th>Calories</th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             <c:forEach items="${meals}" var="meal">
                 <tr style="color: ${meal.excess ? "red" : "green"}">
-                    <td>${meal.id}</td>
                     <td>
-                        <fmt:parseDate value="${meal.dateTime}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
-                        <fmt:formatDate pattern="dd.MM.yyyy HH:mm" value="${parsedDateTime}" />
+                        <fmt:parseDate value="${meal.dateTime}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both"/>
+                        <fmt:formatDate pattern="dd.MM.yyyy HH:mm" value="${parsedDateTime}"/>
                     </td>
                     <td><c:out value="${meal.description}"/></td>
                     <td><c:out value="${meal.calories}"/></td>
                     <td>
-                        <a href="/meals?action=update&id=<c:out value="${meal.id}"/>">Update</a>
+                        <a href="meals?action=update&id=<c:out value="${meal.id}"/>">Update</a>
                     </td>
                         <td>
-                            <a href="/meals?action=delete&id=<c:out value="${meal.id}"/>">Delete</a>
+                            <a href="meals?action=delete&id=<c:out value="${meal.id}"/>">Delete</a>
                         </td>
                 </tr>
             </c:forEach>
         </tbody>
     </table>
+    <br>
+    <a href="meals?action=create">Create</a>
 
 </body>
 </html>
