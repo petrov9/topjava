@@ -80,7 +80,7 @@ public class JdbcMealRepository implements MealRepository {
         return jdbcTemplate.query("select m.id, m.datetime, m.description, m.calories from meals m "
                 + "inner join user_meal us on us.meal_id = m.id where us.user_id = ? "
                 + "and m.datetime >= TO_TIMESTAMP(?, 'YYYY-MM-DD HH24:MI:SS') "
-                + "and m.datetime <= TO_TIMESTAMP(?, 'YYYY-MM-DD HH24:MI:SS') "
+                + "and m.datetime < TO_TIMESTAMP(?, 'YYYY-MM-DD HH24:MI:SS') "
                 + "order by m.datetime desc",
             ROW_MAPPER, userId, DateTimeUtil.toString(startDate), DateTimeUtil.toString(endDate));
     }
