@@ -1,4 +1,4 @@
-https://travis-ci.org/GSI-CS-CO/chart-fx.svg?branch=master
+[![Build Status](https://travis-ci.org/GSI-CS-CO/chart-fx.svg?branch=master)](https://travis-ci.org/GSI-CS-CO/chart-fx)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2d149bc059774b17b3fb79e5b6d157d1)](https://app.codacy.com/manual/petrov9/topjava?utm_source=github.com&utm_medium=referral&utm_content=petrov9/topjava&utm_campaign=Badge_Grade_Dashboard)
 
 Java Enterprise Online Project 
