@@ -1,8 +1,15 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.Assert;
+import org.junit.AssumptionViolatedException;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.junit.runners.model.Statement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -27,6 +34,58 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
+
+    private String commonLog;
+    private long start;
+    private long executeTime;
+
+    @Rule
+    public final TestRule watchRule = new TestWatcher() {
+        @Override
+        public Statement apply(Statement base, Description description) {
+            return super.apply(base, description);
+        }
+
+        @Override
+        protected void succeeded(Description description) {
+            super.succeeded(description);
+        }
+
+        @Override
+        protected void failed(Throwable e, Description description) {
+            super.failed(e, description);
+        }
+
+        @Override
+        protected void skipped(AssumptionViolatedException e, Description description) {
+            super.skipped(e, description);
+        }
+
+        @Override
+        protected void skipped(org.junit.internal.AssumptionViolatedException e,
+            Description description) {
+            super.skipped(e, description);
+        }
+
+        @Override
+        protected void starting(Description description) {
+            start = System.currentTimeMillis();
+            super.starting(description);
+        }
+
+        @Override
+        protected void finished(Description description) {
+            executeTime = System.currentTimeMillis() - start;
+            System.out.println("Run during: " + executeTime + " ms.");
+
+            commonLog += String.format("%s - %s ms\n", description.getDisplayName(), executeTime);
+            System.out.println(commonLog);
+            super.finished(description);
+        }
+    };
+
     @Autowired
     private MealService service;
     @Autowired
@@ -38,13 +97,15 @@ public class MealServiceTest {
         Assert.assertNull(repository.get(MEAL1_ID, USER_ID));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void deleteNotFound() throws Exception {
+        expectedException.expect(NotFoundException.class);
         service.delete(1, USER_ID);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void deleteNotOwn() throws Exception {
+        expectedException.expect(NotFoundException.class);
         service.delete(MEAL1_ID, ADMIN_ID);
     }
 
@@ -64,13 +125,15 @@ public class MealServiceTest {
         MEAL_MATCHER.assertMatch(actual, ADMIN_MEAL1);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getNotFound() throws Exception {
+        expectedException.expect(NotFoundException.class);
         service.get(1, USER_ID);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getNotOwn() throws Exception {
+        expectedException.expect(NotFoundException.class);
         service.get(MEAL1_ID, ADMIN_ID);
     }
 
@@ -81,8 +144,9 @@ public class MealServiceTest {
         MEAL_MATCHER.assertMatch(service.get(MEAL1_ID, USER_ID), updated);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateNotFound() throws Exception {
+        expectedException.expect(NotFoundException.class);
         service.update(MEAL1, ADMIN_ID);
     }
 
