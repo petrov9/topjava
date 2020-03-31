@@ -1,35 +1,50 @@
 package ru.javawebinar.topjava.service;
 
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.Rule;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
-import org.springframework.dao.DataAccessException;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.junit4.SpringRunner;
-import ru.javawebinar.topjava.ActiveDbProfileResolver;
+import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.List;
 
 import static ru.javawebinar.topjava.UserTestData.*;
 
-@ContextConfiguration({
-        "classpath:spring/spring-app.xml",
-        "classpath:spring/spring-db.xml"
-})
-@RunWith(SpringRunner.class)
-@Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
-@ActiveProfiles(resolver = ActiveDbProfileResolver.class)
 public class UserServiceTest {
+    private static final Logger log = LoggerFactory.getLogger(UserServiceTest.class);
+
+    private static StringBuilder results = new StringBuilder();
+
+    @Rule
+    public Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void finished(long nanos, Description description) {
+            String result = String.format("\n%-25s %7d", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
+            results.append(result);
+            log.info(result + " ms\n");
+        }
+    };
+
+    @AfterClass
+    public static void printResult() {
+        log.info("\n---------------------------------" +
+            "\nTest                 Duration, ms" +
+            "\n---------------------------------" +
+            results +
+            "\n---------------------------------");
+        results = new StringBuilder();
+    }
 
     @Autowired
     private UserService service;
@@ -44,7 +59,6 @@ public class UserServiceTest {
         cacheManager.getCache("users").clear();
     }
 
-    @Test
     public void create() throws Exception {
         User newUser = getNew();
         User created = service.create(newUser);
@@ -54,7 +68,6 @@ public class UserServiceTest {
         USER_MATCHER.assertMatch(service.get(newId), newUser);
     }
 
-    @Test(expected = DataAccessException.class)
     public void duplicateMailCreate() throws Exception {
         service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", Role.ROLE_USER));
     }
@@ -64,38 +77,37 @@ public class UserServiceTest {
         Assert.assertNull(repository.get(USER_ID));
     }
 
-    @Test(expected = NotFoundException.class)
     public void deletedNotFound() throws Exception {
         service.delete(1);
     }
 
-    @Test
     public void get() throws Exception {
         User user = service.get(USER_ID);
         USER_MATCHER.assertMatch(user, USER);
     }
 
-    @Test(expected = NotFoundException.class)
     public void getNotFound() throws Exception {
         service.get(1);
     }
 
-    @Test
     public void getByEmail() throws Exception {
         User user = service.getByEmail("user@yandex.ru");
         USER_MATCHER.assertMatch(user, USER);
     }
 
-    @Test
     public void update() throws Exception {
         User updated = getUpdated();
         service.update(updated);
         USER_MATCHER.assertMatch(service.get(USER_ID), updated);
     }
 
-    @Test
     public void getAll() throws Exception {
         List<User> all = service.getAll();
         USER_MATCHER.assertMatch(all, ADMIN, USER);
+    }
+
+    public void getMealsByUser() {
+        Set<Meal> meals = service.get(100001).getMeals();
+        Assert.assertEquals(2, meals.size());
     }
 }
