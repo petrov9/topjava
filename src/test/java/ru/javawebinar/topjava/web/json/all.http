@@ -1,7 +1,0 @@
-### Get all admin users
-GET http://localhost:8080/topjava/rest/admin/users
-Accept: application/json
-
-### Get admin by email
-GET http://localhost:8080/topjava/rest/admin/users/by?email=user@yandex.ru
-Accept: application/json

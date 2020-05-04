@@ -55,6 +55,14 @@ public abstract class AbstractMealController {
         service.update(meal, userId);
     }
 
+    public List<MealTo> getBetween(@Nullable LocalDate startDate, @Nullable LocalDate endDate) {
+        return getBetween(startDate, null, endDate, null);
+    }
+
+    public List<MealTo> getBetween(@Nullable LocalTime startTime, @Nullable LocalTime endTime) {
+        return getBetween(null, startTime, null, endTime);
+    }
+
     /**
      * <ol>Filter separately
      * <li>by date</li>

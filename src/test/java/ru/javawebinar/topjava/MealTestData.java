@@ -4,12 +4,14 @@ import ru.javawebinar.topjava.model.Meal;
 
 import java.time.Month;
 import java.util.List;
+import ru.javawebinar.topjava.to.MealTo;
 
 import static java.time.LocalDateTime.of;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class MealTestData {
     public static TestMatcher<Meal> MEAL_MATCHER = TestMatcher.usingFieldsComparator(Meal.class, "user");
+    public static TestMatcher<MealTo> MEALTO_MATCHER = TestMatcher.usingFieldsComparator(MealTo.class, "excess");
 
     public static final int MEAL1_ID = START_SEQ + 2;
     public static final int ADMIN_MEAL_ID = START_SEQ + 9;

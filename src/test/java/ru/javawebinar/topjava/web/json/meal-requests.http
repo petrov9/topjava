@@ -1,0 +1,33 @@
+### Get meal
+GET {{host}}/rest/meals/100003
+Content-Type: application/json
+
+### Create meal
+POST {{host}}/rest/meals
+Content-Type: application/json
+
+{
+  "dateTime": "2020-05-04T14:07:16",
+  "description": "Новый завтрак",
+  "calories": 3000
+}
+
+### Delete meal
+DELETE {{host}}/rest/meals/100011
+
+### Update meal
+PUT {{host}}/rest/meals
+Content-Type: application/json
+
+{
+  "id": 100003,
+  "dateTime": "2020-01-30T13:00:00",
+  "description": "Очень плотный обед",
+  "calories": 2000
+}
+
+### Get meals by filter date
+GET {{host}}/rest/meals/filterDate?startDate=2020-01-30&endDate=2020-02-01
+
+### Get meals by filter time
+GET {{host}}/rest/meals/filterTime?startTime=13:00&endTime=20:01
