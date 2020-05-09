@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -62,6 +63,7 @@ public class User extends AbstractNamedEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")//, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @OrderBy("dateTime DESC")
+//    @JsonIgnore
     private List<Meal> meals;
 
     public User() {
@@ -119,6 +121,11 @@ public class User extends AbstractNamedEntity {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    @JsonIgnore
+    public void changeEnable() {
+        this.enabled = !enabled;
     }
 
     public Set<Role> getRoles() {
