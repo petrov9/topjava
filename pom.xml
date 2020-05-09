@@ -46,6 +46,7 @@
         <webjars-datetimepicker.version>2.5.20</webjars-datetimepicker.version>
         <webjars-noty.version>3.1.4</webjars-noty.version>
         <webjars-datatables.version>1.10.20</webjars-datatables.version>
+        <webjars-moment.version>2.24.0</webjars-moment.version>
     </properties>
 
     <build>
@@ -272,6 +273,12 @@
             <artifactId>noty</artifactId>
             <version>${webjars-noty.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>momentjs</artifactId>
+            <version>${webjars-moment.version}</version>
+        </dependency>
+
 
         <!--JSON-->
         <dependency>
@@ -310,6 +317,13 @@
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <version>${spring.security.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
