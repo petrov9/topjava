@@ -1,36 +1,18 @@
 package ru.javawebinar.topjava.to;
 
 import java.beans.ConstructorProperties;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import org.hibernate.validator.constraints.Range;
 
-public class MealTo extends BaseTo implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class MealTo extends BaseTo {
 
-    @NotNull(message = "wrong date/time format")
-    private LocalDateTime dateTime;
+    private final LocalDateTime dateTime;
 
-    @Size(min = 2, max = 120, message = "length must be between 2 and 120")
-    private String description;
+    private final String description;
 
-    @Range(min = 10, max = 5000, message = "must be between 10 and 5000")
-    private Integer calories;
+    private final int calories;
 
-    private boolean excess;
-
-    public MealTo() {
-    }
-
-    public MealTo(Integer id, LocalDateTime dateTime, String description, int calories) {
-        super(id);
-        this.dateTime = dateTime;
-        this.description = description;
-        this.calories = calories;
-    }
+    private final boolean excess;
 
     @ConstructorProperties({"id", "dateTime", "description", "calories", "excess"})
     public MealTo(Integer id, LocalDateTime dateTime, String description, int calories, boolean excess) {
@@ -45,32 +27,16 @@ public class MealTo extends BaseTo implements Serializable {
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public int getCalories() {
         return calories;
     }
 
-    public void setCalories(int calories) {
-        this.calories = calories;
-    }
-
     public boolean isExcess() {
         return excess;
-    }
-
-    public void setExcess(boolean excess) {
-        this.excess = excess;
     }
 
     @Override
