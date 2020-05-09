@@ -40,14 +40,3 @@ $(function () {
         }
     );
 });
-
-function changeEnable(id) {
-    $.ajax({
-        type: "POST",
-        url: context.ajaxUrl + id,
-        data: form.serialize()
-    }).done(function () {
-        updateTable();
-        successNoty("Changed");
-    });
-}
