@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.web;
 
+import java.util.StringJoiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -7,11 +8,15 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.ValidationUtil;
 import ru.javawebinar.topjava.util.exception.ErrorInfo;
 import ru.javawebinar.topjava.util.exception.ErrorType;
@@ -41,7 +46,9 @@ public class ExceptionInfoHandler {
     }
 
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)  // 422
-    @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
+    @ExceptionHandler({
+        IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class,
+        HttpMessageNotReadableException.class, BindException.class, MethodArgumentNotValidException.class})
     public ErrorInfo illegalRequestDataError(HttpServletRequest req, Exception e) {
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
     }
@@ -60,6 +67,31 @@ public class ExceptionInfoHandler {
         } else {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
-        return new ErrorInfo(req.getRequestURL(), errorType, rootCause.toString());
+
+        StringJoiner joiner = new StringJoiner("<br>");
+
+        if (e instanceof DataIntegrityViolationException) {
+            String msg = ((DataIntegrityViolationException) e).getRootCause().getLocalizedMessage();
+            if (msg.contains(Meal.MEALS_UNIQUE_USER_DATETIME_IDX)) {
+                joiner.add(GlobalExceptionHandler.DATE_TIME_DUPLICATE_MESSAGE);
+            } else if (msg.contains(User.USERS_UNIQUE_EMAIL_IDX)) {
+                joiner.add(GlobalExceptionHandler.EMAIL_DUPLICATE_MESSAGE);
+            } else {
+                joiner.add("Some exception. Write to support");
+            }
+
+        } else if (e instanceof MethodArgumentNotValidException) {
+            ((MethodArgumentNotValidException) e).getBindingResult().getFieldErrors().forEach(
+                fe -> joiner.add(String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
+            );
+        } else if (e instanceof BindException) {
+            ((BindException) e).getBindingResult().getFieldErrors().forEach(
+                fe -> joiner.add(String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
+            );
+        } else {
+            joiner.add(rootCause.toString());
+        }
+
+        return new ErrorInfo(req.getRequestURL(), errorType, joiner.toString());
     }
 }
